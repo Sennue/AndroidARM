@@ -1,0 +1,40 @@
+Android NDK
+-----------
+https://developer.android.com/ndk/guides/standalone_toolchain.html
+https://developer.android.com/guide/topics/manifest/uses-sdk-element.html
+
+ARM ASM
+-------
+http://www.peter-cockerell.net/aalp/html/ch-3.html
+http://www.coranac.com/tonc/text/asm.htm
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0473c/CJAJBFHC.html
+http://www.sokoide.com/wp/2015/06/14/learning-arm-assembly-basics/
+http://www.amccormack.net/2012-11-03-getting-started-arm-assembly-for-android.html
+http://www.androidpentesting.com/2014/01/arm-assembly-part-3-hello-world-in-arm.html
+http://peterdn.com/post/e28098Hello-World!e28099-in-ARM-assembly.aspx
+https://sourceware.org/ml/binutils/2014-02/msg00157.html
+ihttp://www.airs.com/blog/archives/41
+
+GAS
+---
+http://web.mit.edu/gnu/doc/html/as_7.html
+
+GDB
+---
+https://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/
+https://github.com/mapbox/mapbox-gl-native/wiki/Android-debugging-with-remote-GDB
+
+Example Standalone Toolchain Creation
+-------------------------------------
+$ANDROID_NDK/build/tools/make-standalone-toolchain.sh --arch=arm --platform=android-21 --install-dir=$HOME/custom-android-toolchain --toolchain=arm-linux-androideabi-4.8 --llvm-version=3.6 
+
+Useful GDB Commands
+-------------------
+x/5s *((char **)($sp+4))
+p variable
+
+Find Phone CPU Architecture
+---------------------------
+adb shell getprop ro.product.cpu.abi
+adb shell getprop ro.product.cpu.abi2
+
