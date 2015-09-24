@@ -38,3 +38,47 @@ Find Phone CPU Architecture
 adb shell getprop ro.product.cpu.abi
 adb shell getprop ro.product.cpu.abi2
 
+What C Main Looks Like in ASM (Slightly Modified)
+-------------------------------------------------
+@ trivial main
+main:
+	@ params: r0=argc, r1=argv, lr=return address
+	@ note: stack grows down, indices reversed
+	@ initialize local variables
+	sub	sp,sp,$12	@ allocate 3 locals on stack
+	mov	r2,$0		@ zero = 0
+	str	r2,[sp,$8]	@ local[0] = zero (why???)
+	str	r0,[sp,$4]	@ local[1] = argc
+	str	r1,[sp]		@ local[2] = argv
+	@ [main body here]
+	@ return(n)
+	add	sp,sp,$12	@ restore stack
+	mov	r0,r2		@ return_value = n
+	bx	lr		@ return to caller
+
+@ non-trivial main
+main:
+	push	{r11,lr}	@ store return address
+	mov	r11,sp		@ backup stack pointer
+	sub	sp,sp,$16	@ allocate 4 locals on stack
+	ldr	r2,.Lgot	@ global_lookup_table_ptr = &global_lookup_table-&Lpie0
+	add	r2,r2,pc	@ global_lookup_table_ptr += &Lpie0 (3 instruction pipeline)
+	ldr	r3,.Larray	@ array_ptr = &const_array - &global_lookup_table
+.Lpie0	add	r2,r3,r2	@ value_a_ptr += &global_lookup_table
+	mov	r3,$0		@ zero = 0
+	str	r3,[sp,$12]	@ local[0] = zero (why???)
+	str	r0,[sp,$8]	@ local[1] = argc
+	str	r1,[sp,$4]	@ local[2] = argv
+	@ [main body here]
+	mov	r0,r2		@ subroutine parameter
+	bl	my_subroutine	@ my_subroutine(array_ptr)
+	str	r0,[sp]		@ local[3] = result of some subroutine
+	@ return(n)
+	mov	sp,r11		@ restore stack
+	mov	r0,r1		@ return_value = n
+	pop	{r11,pc}	@ return to caller
+.Lgot:
+	.long	_GLOBAL_OFFSET_TABLE_-.Lpie0
+.Larray:
+	.word	const_array(GOT)
+

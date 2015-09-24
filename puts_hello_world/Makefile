@@ -19,7 +19,7 @@ ASM_LIBS=-lc
 
 C_TARGET=c-puts-hello-world
 C_PARAM=
-C_DEPS=system.inc
+C_DEPS=
 C_OBJ=main.o $(CRT)
 C_LIBS=-lc
 

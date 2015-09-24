@@ -11,16 +11,16 @@ ASFLAGS=--gdwarf2
 LDFLAGS=-pie --dynamic-linker=/system/bin/linker
 GDBFLAGS=-tui
 
-ASM_TARGET=asm-arg-echo
-ASM_PARAM=1 2
+ASM_TARGET=asm-main-hello-world
+ASM_PARAM=
 ASM_DEPS=system.inc
-ASM_OBJ=start.o
-ASM_LIBS=
+ASM_OBJ=asm_main.o $(CRT)
+ASM_LIBS=-lc
 
-C_TARGET=c-arg-echo
-C_PARAM=1 2
+C_TARGET=c-main-hello-world
+C_PARAM=
 C_DEPS=
-C_OBJ=main.o $(CRT)
+C_OBJ=c_main.o $(CRT)
 C_LIBS=-lc
 
 
@@ -55,14 +55,16 @@ debug_remote_asm:
 	adb shell gdbserver :5555 /data/data/test/$(ASM_TARGET)
 
 debug_local_asm:
-	$(GDB) $(GDBFLAGS) $(ASM_TARGET) # target remote :5555
+	$(GDB) $(GDBFLAGS) $(ASM_TARGET)
+	# target remote :5555
 
 debug_remote_c:
 	adb forward tcp:5555 tcp:5555
 	adb shell gdbserver :5555 /data/data/test/$(C_TARGET)
 
 debug_local_c:
-	$(GDB) $(GDBFLAGS) $(C_TARGET) # target remote :5555
+	$(GDB) $(GDBFLAGS) $(C_TARGET)
+	# target remote :5555
 
 clean:
 	rm -rf $(ASM_TARGET) $(C_TARGET) *.o
