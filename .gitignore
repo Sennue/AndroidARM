@@ -1,2 +1,6 @@
 # object files
 *.o
+
+# vi
+*.swp
+
