@@ -47,30 +47,42 @@ node_t *walk_tree(node_t *pNode, node_t *(*pProc)(node_t *pNode))
 
 node_t *find_node(node_t *pNode, node_t *(*pProc)(node_t *pNode, const char *pValue), const char *pValue)
 {
-	// proc null node and return result to caller
+	// proc null root
 	if (NULL == pNode) {
 		return pProc(pNode, pValue);
 	}
 
 	int compare = strcmp(pValue, pNode->value);
 
-	// proc found node and return result to caller
+	// proc this node
 	if (0 == compare) {
 		return pProc(pNode, pValue);
 	}
 
-	// if less than current value search left
+	// if less than current value, left
 	else if (compare < 0) {
-		pNode->left = find_node(pNode->left, pProc, pValue);
+		// if null the value would go here, proc and set
+		if (NULL == pNode->left) {
+			return pNode->left = pProc(pNode->left, pValue);
+		// otherwise keep searching
+		} else {
+			return find_node(pNode->left, pProc, pValue);
+		}
 	}
 
-	// if greater than current value search right
+	// if greater than current value, right
 	else if (0 < compare) {
-		pNode->right = find_node(pNode->right, pProc, pValue);
+		// if null the value would go here, proc and set
+		if (NULL == pNode->right) {
+			return pNode->right = pProc(pNode->right, pValue);
+		// otherwise keep searching
+		} else {
+			return find_node(pNode->right, pProc, pValue);
+		}
 	}
 
-	// do not change node
-	return pNode;
+	// not a match
+	return NULL;
 }
 
 node_t *insert_value(node_t *pNode, const char *pValue)
