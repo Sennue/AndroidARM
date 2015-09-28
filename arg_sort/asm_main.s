@@ -19,18 +19,18 @@ main:
 	mov	r4,r1		@ argv
 
 	@ printf(message, argvn)
-	ldr	r5,[r4],$4	@ argvn = argv++ (argv[0]) backup
-	movs	r1,r5		@ argvn, NULL test
-	adrne	r0,message	@ format
-	blxne	r9		@ printf
+	ldr	r1,[r4],$4	@ argvn = argv++ (argv[0]) backup
+	teq	r1,$0		@ argvn, NULL test
+	beq	done		@ return if argvn == NULL
+	adr	r0,message	@ format
+	blx	r9		@ printf
 
 	@ alloc_node(argvn) if NULL != argvn
-	mov	r6,$0		@ root = NULL
-	movs	r0,r5		@ restore argvn, NULL test
-	ldrne	r5,[r4],$4	@ argvn = argv++ (argv[1]) backup
-	movs	r0,r5		@ argvn, NULL test
-	blne	alloc_node	@ alloc_node
-	mov	r6,r0		@ root = alloc_node(argv[1])
+	ldr	r0,[r4],$4	@ argvn = argv++ (argv[1]) backup
+	teq	r0,$0		@ argvn, NULL test
+	beq	done		@ return if argvn == NULL
+	bl	alloc_node	@ alloc_node
+	mov	r5,r0		@ root = alloc_node(argv[1])
 
 	@	load insert_value
 	ldr	r9,.Linsert_value
@@ -38,27 +38,27 @@ main:
 	@ while (NULL != argvn) find_node(root, insert_value, argvn) arvn = argv++
 	b	loop_test
 loop_top:
-	ldrne	r1,[r9,r10]	@ insert_value
-	movne	r0,r6		@ root
-	blne	find_node	@ find_node(root, insert_value, argvn)
+	ldr	r1,[r9,r10]	@ insert_value
+	mov	r0,r5		@ root
+	bl	find_node	@ find_node(root, insert_value, argvn)
 loop_test:
-	movs	r2,r5		@ restore argvn, NULL test
-	ldrne	r5,[r4],$4	@ argvn = argv++ (argv[1]) backup
-	movs	r2,r5		@ restore argvn, NULL test
+	ldr	r2,[r4],$4	@ argvn = argv++ (argv[1]) backup
+	teq	r2,$0		@ restore argvn, NULL test
 	bne	loop_top
 
 	@ walk_tree(root, print_tree)
 	ldr	r9,.Lprint_tree
 	ldr	r1,[r9,r10]	@ print_tree
-	mov	r0,r6		@ root
+	mov	r0,r5		@ root
 	bl	walk_tree	@ walk_tree(root, print_tree)
 
 	@ walk_tree(root, free_tree)
 	ldr	r9,.Lfree_tree
 	ldr	r1,[r9,r10]	@ free_tree
-	mov	r0,r6		@ root
+	mov	r0,r5		@ root
 	bl	walk_tree	@ walk_tree(root, free_tree)
 
+done:
 	@ return(0)
 	mov	r0,$0
 	bx	r11
