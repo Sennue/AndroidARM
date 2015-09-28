@@ -45,6 +45,7 @@ node_t *walk_tree(node_t *pNode, node_t *(*pProc)(node_t *pNode))
 	return result;
 }
 
+// not robust enough to perform a delete
 node_t *find_node(node_t *pNode, node_t *(*pProc)(node_t *pNode, const char *pValue), const char *pValue)
 {
 	// proc null root

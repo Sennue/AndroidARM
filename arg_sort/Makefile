@@ -14,7 +14,7 @@ GDBFLAGS=-tui
 ASM_TARGET=asm-arg-sort
 ASM_PARAM=c a b e d
 ASM_DEPS=system.inc
-ASM_OBJ=asm_main.o asm_tree.o $(CRT)
+ASM_OBJ=asm_main.o c_tree.o $(CRT)
 ASM_LIBS=-lc
 
 C_TARGET=c-arg-sort
@@ -52,7 +52,7 @@ test:
 
 debug_remote_asm:
 	adb forward tcp:5555 tcp:5555
-	adb shell gdbserver :5555 /data/data/test/$(ASM_TARGET)
+	adb shell gdbserver :5555 /data/data/test/$(ASM_TARGET) $(ASM_PARAM)
 
 debug_local_asm:
 	$(GDB) $(GDBFLAGS) $(ASM_TARGET)
@@ -60,7 +60,7 @@ debug_local_asm:
 
 debug_remote_c:
 	adb forward tcp:5555 tcp:5555
-	adb shell gdbserver :5555 /data/data/test/$(C_TARGET)
+	adb shell gdbserver :5555 /data/data/test/$(C_TARGET) $(C_PARAM)
 
 debug_local_c:
 	$(GDB) $(GDBFLAGS) $(C_TARGET)

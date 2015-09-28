@@ -10,47 +10,72 @@ main:
 	nop @ for gbd breakpoint
 
 	mov	r11,lr		@ backup return address
-	ldr	r9,.Lgot	@ got_ptr = &GOT - X
-	add	r9,r9,pc	@ got_ptr += X
-	ldr	r10,.Lputs	@ puts_offset
-.Lpie0:	ldr	r9,[r9,r10]	@ buffer = *(got_ptr+puts_offset)
-	mov	r10,$EOF	@ preload const EOF
+	ldr	r10,.Lgot	@ got_ptr = &GOT - X
+	add	r10,r10,pc	@ got_ptr += X
+	ldr	r9,.Lprintf	@ printf_offset
+.Lpie0:	ldr	r9,[r9,r10]	@ printf = printf_ptr
 
-	@ result = function(message)
-	mov	r0,r9
-	adr	r1,message
-	bl	function
+	@ backup argv
+	mov	r4,r1		@ argv
 
-	@ if EOF != result
-	@   result = subroutine(message)
-	teq	r0,r10
-	movne	r0,r9
-	adrne	r1,message
-	blne	subroutine
+	@ printf(message, argvn)
+	ldr	r5,[r4],$4	@ argvn = argv++ (argv[0]) backup
+	movs	r1,r5		@ argvn, NULL test
+	adrne	r0,message	@ format
+	blxne	r9		@ printf
 
-	@ if EOF != result
-	@   result = inline_asm(message)
-	teq	r0,r10
-	movne	r0,r9
-	adrne	r1,message
-	blne	inline_asm
+	@ alloc_node(argvn) if NULL != argvn
+	mov	r6,$0		@ root = NULL
+	movs	r0,r5		@ restore argvn, NULL test
+	ldrne	r5,[r4],$4	@ argvn = argv++ (argv[1]) backup
+	movs	r0,r5		@ argvn, NULL test
+	blne	alloc_node	@ alloc_node
+	mov	r6,r0		@ root = alloc_node(argv[1])
 
-	@ if EOF != result
-	@   return(0)
-	@ else
-	@   return(1)
-	teq	r0,r10
-	movne	r0,$0
-	moveq	r0,$1
+	@	load insert_value
+	ldr	r9,.Linsert_value
+
+	@ while (NULL != argvn) find_node(root, insert_value, argvn) arvn = argv++
+	b	loop_test
+loop_top:
+	ldrne	r1,[r9,r10]	@ insert_value
+	movne	r0,r6		@ root
+	blne	find_node	@ find_node(root, insert_value, argvn)
+loop_test:
+	movs	r2,r5		@ restore argvn, NULL test
+	ldrne	r5,[r4],$4	@ argvn = argv++ (argv[1]) backup
+	movs	r2,r5		@ restore argvn, NULL test
+	bne	loop_top
+
+	@ walk_tree(root, print_tree)
+	ldr	r9,.Lprint_tree
+	ldr	r1,[r9,r10]	@ print_tree
+	mov	r0,r6		@ root
+	bl	walk_tree	@ walk_tree(root, print_tree)
+
+	@ walk_tree(root, free_tree)
+	ldr	r9,.Lfree_tree
+	ldr	r1,[r9,r10]	@ free_tree
+	mov	r0,r6		@ root
+	bl	walk_tree	@ walk_tree(root, free_tree)
+
+	@ return(0)
+	mov	r0,$0
 	bx	r11
 
 @ Data needs to be in .text for PIE
 @.data
 message:
-	.asciz	"[ASM Caller]"
+	.asciz	"[ASM Caller] %s\n"
 .Lgot:
 	.long	_GLOBAL_OFFSET_TABLE_-.Lpie0
-.Lputs:
-	.word	puts(GOT)
+.Lprintf:
+	.word	printf(GOT)
+.Linsert_value:
+	.word	insert_value(GOT)
+.Lprint_tree:
+	.word	print_tree(GOT)
+.Lfree_tree:
+	.word	free_tree(GOT)
 	.align	ALIGNMENT
 
