@@ -20,7 +20,7 @@ ASM_LIBS=-lc
 C_TARGET=c-arg-sort
 C_PARAM=c a b e d
 C_DEPS=tree.h
-C_OBJ=c_main.o c_tree.o $(CRT)
+C_OBJ=c_main.o asm_tree.o $(CRT)
 C_LIBS=-lc
 
 

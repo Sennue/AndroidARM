@@ -3,7 +3,8 @@
 #include <string.h>
 #include "tree.h"
 
-node_t *alloc_node(const char *pValue) {
+node_t *alloc_node(const char *pValue)
+{
 	node_t *result = malloc(sizeof(node_t));
 	result->value = pValue;
 	result->left = NULL;

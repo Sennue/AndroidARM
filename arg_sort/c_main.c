@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-	node_t *root;
+	node_t *root = NULL;
 	char *argvn;
 
 	// print program name
@@ -11,7 +11,9 @@ int main(int argc, char **argv)
 	printf("[C Caller] %s\n", argvn);
 
 	// build root
-	argvn = *(argv++); // root arg
+	if (NULL != argvn) {
+		argvn = *(argv++); // root arg
+	}
 	if (NULL != argvn) {
 		root = alloc_node(argvn); // root node
 		argvn = *(argv++); // first loop arg
