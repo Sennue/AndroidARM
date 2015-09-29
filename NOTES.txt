@@ -18,6 +18,7 @@ ihttp://www.airs.com/blog/archives/41
 GAS
 ---
 http://web.mit.edu/gnu/doc/html/as_7.html
+http://blackfin.uclinux.org/doku.php?id=toolchain:gas:structs
 
 GDB
 ---
