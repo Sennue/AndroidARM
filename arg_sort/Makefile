@@ -13,13 +13,13 @@ GDBFLAGS=-tui
 
 ASM_TARGET=asm-arg-sort
 ASM_PARAM=c a b e d
-ASM_DEPS=system.inc
+ASM_DEPS=system.inc tree.ing
 ASM_OBJ=asm_main.o c_tree.o $(CRT)
 ASM_LIBS=-lc
 
 C_TARGET=c-arg-sort
 C_PARAM=c a b e d
-C_DEPS=
+C_DEPS=tree.h
 C_OBJ=c_main.o c_tree.o $(CRT)
 C_LIBS=-lc
 
@@ -34,9 +34,13 @@ $(C_TARGET): $(C_OBJ)
 $(ASM_TARGET): $(ASM_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@ $(ASM_LIBS)
 
+asm_struct.s: asm_struct.c asm_struct.h tree.h
+	$(CC) -E -S $< -o - #| grep '^->'
+	$(CC) -S $< -o - #| grep '^->'
+	# broken, but the values could be extracted manually
+
 %.o: %.c $(C_DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
-
 
 %.o: %.s $(ASM_DEPS)
 	$(AS) $(ASFLAGS) $< -o $@

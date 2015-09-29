@@ -1,4 +1,5 @@
 .include "system.inc"
+.include "tree.inc"
 	.syntax unified
 	.set ALIGNMENT,8
 	.set EOF,-1
