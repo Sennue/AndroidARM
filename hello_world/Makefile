@@ -55,6 +55,7 @@ uninstall:
 	adb remount
 	adb shell "mkdir $(INSTALL)"
 	adb shell "rm -rf $(INSTALL)/$(ASM_TARGET) $(INSTALL)/$(C_TARGET)"
+	adb shell "rmdir $(INSTALL)"
 
 test:
 	adb root
