@@ -24,7 +24,6 @@ C_DEPS=
 C_OBJ=main.o $(CRT)
 C_LIBS=-lc
 
-
 all: $(ASM_TARGET) $(C_TARGET)
 
 force: clean all
@@ -37,7 +36,6 @@ $(ASM_TARGET): $(ASM_OBJ)
 
 %.o: %.c $(C_DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
-
 
 %.o: %.s $(ASM_DEPS)
 	$(AS) $(ASFLAGS) $< -o $@
