@@ -13,7 +13,7 @@ http://www.amccormack.net/2012-11-03-getting-started-arm-assembly-for-android.ht
 http://www.androidpentesting.com/2014/01/arm-assembly-part-3-hello-world-in-arm.html
 http://peterdn.com/post/e28098Hello-World!e28099-in-ARM-assembly.aspx
 https://sourceware.org/ml/binutils/2014-02/msg00157.html
-ihttp://www.airs.com/blog/archives/41
+http://www.airs.com/blog/archives/41
 
 GAS
 ---
