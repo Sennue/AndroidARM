@@ -48,12 +48,20 @@ install: all
 	adb shell "mkdir $(INSTALL)"
 	adb push $(ASM_TARGET) $(INSTALL) 
 	adb push $(C_TARGET) $(INSTALL) 
+	adb shell "chmod +x $(INSTALL)/$(ASM_TARGET) $(INSTALL)/$(C_TARGET)"
+
+uninstall:
+	adb root
+	adb remount
+	adb shell "mkdir $(INSTALL)"
+	adb shell "rm -rf $(INSTALL)/$(ASM_TARGET) $(INSTALL)/$(C_TARGET)"
 
 test:
-	adb shell "$(INSTALL)/$(ASM_TARGET) $(ASM_PARAM)"
-	adb shell "$(INSTALL)/$(C_TARGET) $(C_PARAM)"
+	adb root
+	adb shell "$(INSTALL)/$(ASM_TARGET) $(ASM_PARAM) && $(INSTALL)/$(C_TARGET) $(C_PARAM)"
 
 debug_remote_asm:
+	adb root
 	adb forward tcp:5555 tcp:5555
 	adb shell gdbserver :5555 $(INSTALL)/$(ASM_TARGET)
 
@@ -63,6 +71,7 @@ debug_local_asm:
 	$(GDB) $(GDBFLAGS) $(ASM_TARGET)
 
 debug_remote_c:
+	adb root
 	adb forward tcp:5555 tcp:5555
 	adb shell gdbserver :5555 $(INSTALL)/$(C_TARGET)
 
